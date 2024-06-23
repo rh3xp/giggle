@@ -75,11 +75,10 @@ class MongoConnection:
             return False
 
     def connect_collection(self, db_conn: Database, collection_name: str):
-        collection_list = db_conn.list_collection_names()
-        if collection_name in collection_list:
+        try:
+            collection_conn = db_conn[collection_name]
             print(f"Established connection to collection '{collection_name}'.")
-
-        else:
+        except:
             print("Collection does not exist.")
 
     def insert_one_into_collection(self, db_conn:Database, collection_name:str, data:Dict):
@@ -115,20 +114,6 @@ class MongoConnection:
             print("Deleting 1 record successful.")
         else:
             print("Unable to delete record.")
-        # if delete_type == "one":
-        #     result = db_conn[collection_name].delete_one(query)
-        #     print(result)
-        #     if result.acknowledged:
-        #         print(result.acknowledged)
-        #         print("Deleting 1 record successful.")
-        #     else:
-        #         print("Unable to delete record.")
-        # elif delete_type == "many":
-        #     result = db_conn[collection_name].delete_many(query)
-        #     if result.acknowledged:
-        #         print("Deleting 1 record successful.")
-        #     else:
-        #         print("Unable to delete record.")
 
     def fetch_first_from_collection(self, db_conn:Database, collection_name:str):
         collection_conn = db_conn[collection_name]
@@ -151,6 +136,13 @@ class MongoConnection:
     def get_document_count(self, db_conn:Database, collection_name:str, query:Dict={}):
         return db_conn[collection_name].count_documents(query)
 
+    def drop_collection(self, db_conn:Database, collection_name:str):
+        try:
+            collection_conn = db_conn[collection_name]
+            collection_conn.drop()
+            print(f"Dropped collection {collection_name}.")
+        except:
+            print(f"Collection {collection_name} does not exist.")
 if __name__ == "__main__":
     mongo_config = MongoDBConfig(host=HOSTNAME, port=PORT, database_name=DB_NAME)
     mongo_conn = MongoConnection(mongo_config)
@@ -160,6 +152,14 @@ if __name__ == "__main__":
                                     collection_name=COLLECTION_NAME)
 
     """
+    # Dropping a collection
+
+    COLLECTION_NAME = "Test"
+    mongo_conn.connect_collection(db_conn=mongo_conn.conn,
+                                    collection_name=COLLECTION_NAME)
+    mongo_conn.drop_collection(db_conn=mongo_conn.conn,
+                                    collection_name=COLLECTION_NAME)
+
     # Insert multiple values in collection
 
     data_list = [

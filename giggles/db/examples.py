@@ -15,7 +15,12 @@ if __name__ == "__main__":
     mongo_conn.create_connection(mongo_config)
     mongo_conn.check_conn_valid()
     mongo_conn.connect_collection(db_conn=mongo_conn.conn,
+                                    collection_name="Test")
+    mongo_conn.drop_collection(db_conn=mongo_conn.conn,
+                                    collection_name="Test")
+    mongo_conn.connect_collection(db_conn=mongo_conn.conn,
                                     collection_name=COLLECTION_NAME)
+
 
     # Insert multiple values in collection
 
